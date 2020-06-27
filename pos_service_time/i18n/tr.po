@@ -1,0 +1,111 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* pos_service_time
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 12.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-07-28 23:03+0000\n"
+"PO-Revision-Date: 2019-07-28 23:03+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pos_service_time
+#. openerp-web
+#: code:addons/pos_service_time/static/src/xml/pos.xml:119
+#, python-format
+msgid "-Time:"
+msgstr "-Zaman:"
+
+#. module: pos_service_time
+#: model_terms:ir.ui.view,arch_db:pos_service_time.pos_config_view_form_inherit
+msgid "Enable time service printing on the POS ticket"
+msgstr "POS biletinde zaman hizmetinin yazdırılmasını sağlayın"
+
+#. module: pos_service_time
+#. openerp-web
+#: code:addons/pos_service_time/static/src/js/models.js:62
+#, python-format
+msgid "Movement not allowed"
+msgstr "Harekete izin verilmiyor"
+
+#. module: pos_service_time
+#: model_terms:ir.ui.view,arch_db:pos_service_time.product_template_form_view_extend
+msgid "Per Hour(/hr)"
+msgstr "Saat başı"
+
+#. module: pos_service_time
+#: model_terms:ir.ui.view,arch_db:pos_service_time.product_template_form_view_extend
+msgid "Per Minute(/min)"
+msgstr "Dakikada"
+
+#. module: pos_service_time
+#: model_terms:ir.ui.view,arch_db:pos_service_time.pos_config_view_form_inherit
+msgid "Print Time Service"
+msgstr "Yazdırma Süresi Hizmeti"
+
+#. module: pos_service_time
+#: model:ir.model.fields,field_description:pos_service_time.field_product_product__service_time_type
+#: model:ir.model.fields,field_description:pos_service_time.field_product_template__service_time_type
+msgid "Service Time"
+msgstr "Servis zamanı"
+
+#. module: pos_service_time
+#. openerp-web
+#: code:addons/pos_service_time/static/src/xml/pos.xml:27
+#, python-format
+msgid "Service(s)"
+msgstr "Hizmet"
+
+#. module: pos_service_time
+#: model:ir.model.fields,field_description:pos_service_time.field_pos_config__check_time_ticket
+msgid "Time Service in Ticket"
+msgstr "Biletlerde Zaman Hizmeti"
+
+#. module: pos_service_time
+#. openerp-web
+#: code:addons/pos_service_time/static/src/js/screens.js:33
+#, python-format
+msgid "Time Service in use"
+msgstr ""
+
+#. module: pos_service_time
+#: model_terms:ir.ui.view,arch_db:pos_service_time.pos_config_view_form_inherit
+msgid "Time in Ticket"
+msgstr "Kullanımda Zaman Hizmeti"
+
+#. module: pos_service_time
+#: code:addons/pos_service_time/models/models.py:45
+#, python-format
+msgid "You can only choose a format for the service time, Hours or Minutes."
+msgstr "Hizmet süresi, Saat veya Dakika için yalnızca bir format seçebilirsiniz."
+
+#. module: pos_service_time
+#. openerp-web
+#: code:addons/pos_service_time/static/src/js/models.js:63
+#, python-format
+msgid "You cannot make changes to a service in use"
+msgstr "Kullanılan bir serviste değişiklik yapamazsınız."
+
+#. module: pos_service_time
+#. openerp-web
+#: code:addons/pos_service_time/static/src/js/screens.js:34
+#, python-format
+msgid "You must stop the current process before moving on to the next screen."
+msgstr "Bir sonraki ekrana geçmeden önce mevcut işlemi durdurmalısınız. Kullanılan bir serviste değişiklik yapamazsınız."
+
+#. module: pos_service_time
+#: selection:product.template,service_time_type:0
+msgid "per Hour"
+msgstr "saat başı"
+
+#. module: pos_service_time
+#: selection:product.template,service_time_type:0
+msgid "per Minute"
+msgstr "Dakikada"
+

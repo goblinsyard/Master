@@ -51,7 +51,7 @@ class ProductTemplate(models.Model):
         return id
 
     is_packaging = fields.Boolean("Is Packaging")
-    loyalty_point = fields.Integer("Loyalty Point")
+    # loyalty_point = fields.Integer("Loyalty Point")
     is_dummy_product = fields.Boolean("Is Dummy Product")
     modifier_line = fields.Many2many('product.modifier', string='Modifier Line')
     is_combo = fields.Boolean("Is Combo")
@@ -131,7 +131,7 @@ class ProductProduct(models.Model):
 class product_category(models.Model):
     _inherit = "pos.category"
 
-    loyalty_point = fields.Integer("Loyalty Point")
+#     loyalty_point = fields.Integer("Loyalty Point")
     return_valid_days = fields.Integer("Return Valid Days")
 
 
