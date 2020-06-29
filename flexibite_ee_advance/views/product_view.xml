@@ -65,7 +65,7 @@
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
         	<field name="to_weight" position="after">
-           		<field name="loyalty_point"/>
+           		<!-- <field name="loyalty_point"/> -->
            		<field name="non_refundable"/>
            		<field name="return_valid_days" attrs="{'invisible': [('non_refundable', '=', True)]}"/>
            	</field>
@@ -134,7 +134,7 @@
         <field name="inherit_id" ref="point_of_sale.product_pos_category_form_view"/>
         <field name="arch" type="xml">
         	<field name="sequence" position="after">
-        		<field name="loyalty_point" />
+        		<!-- <field name="loyalty_point" /> -->
         		<field name="return_valid_days"/>
         	</field>
         </field>

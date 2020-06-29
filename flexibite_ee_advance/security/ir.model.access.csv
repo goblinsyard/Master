@@ -1,8 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_quick_cash_payment,access_quick_cash_payment,model_quick_cash_payment,base.group_user,1,1,1,0
 access_pos_cache,pos.cache,model_pos_cache,point_of_sale.group_pos_user,1,1,1,1
-access_loyalty_point,access_loyalty_point,model_loyalty_point,base.group_user,1,1,1,1
-access_loyalty_point_redeem,access_loyalty_point_redeem,model_loyalty_point_redeem,base.group_user,1,1,1,1
 access_aspl_gift_card,access_aspl_gift_card,model_aspl_gift_card,base.group_user,1,1,1,1
 access_aspl_gift_card_use,access_aspl_gift_card_use,model_aspl_gift_card_use,base.group_user,1,1,1,1
 access_aspl_gift_card_recharge,access_aspl_gift_card_recharge,model_aspl_gift_card_recharge,base.group_user,1,1,1,1
