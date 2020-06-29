@@ -629,7 +629,7 @@
         </div>
     </t>
     
-    	<!-- <t t-name="RedeemLoyaltyPointsPopup">
+    	<t t-name="RedeemLoyaltyPointsPopup">
          <div class="modal-dialog">
             <div class="popup popup-redeem-loyalty">
             	<p class="title">Redeem Loyalty Points</p>
@@ -668,7 +668,7 @@
                 </div>
             </div>
     	 </div>
-    </t> -->
+    </t>
 
     <t t-name="TodayPosReportPopup">
         <div class="modal-dialog">

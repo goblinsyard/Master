@@ -1964,12 +1964,12 @@ odoo.define('flexibite_ee_advance.screens', function (require) {
             	}
             }
         },
-     //    click_redeem_loyalty: function(){
-    	// 	var order = this.pos.get_order();
-    	// 	if(order.get_client()){
-    	// 		this.gui.show_popup("redeem_loyalty_points", {payment_self: this});
-    	// 	}
-    	// },
+        click_redeem_loyalty: function(){
+    		var order = this.pos.get_order();
+    		if(order.get_client()){
+    			this.gui.show_popup("redeem_loyalty_points", {payment_self: this});
+    		}
+    	},
     	payment_input: function(input) {
 			var self = this;
     		var order = this.pos.get_order();
@@ -2522,28 +2522,28 @@ odoo.define('flexibite_ee_advance.screens', function (require) {
             	$('#txt_del_time').val('');
             	order.set_delivery_time(false);
             });
-       //      this.$('.js_redeem_loyalty').click(function(){
-    			// var order = self.pos.get_order();
-    			// if(order.getNetTotalTaxIncluded() <= 0){
-    			// 	return
-    			// }
-    			// if(order.get_client()){
-    			// 	if(self.pos.loyalty_config){
-    			// 		if(order.get_client().total_remaining_points > 0){
-       //  					self.click_redeem_loyalty();
-       //  				} else {
-       //  					self.gui.show_popup('error',{
-       //  						title: _t("Loyalty Points"),
-       //  						body: _t(order.get_client().name + " have 0 points to redeem."),
-       //  					})
-       //  				}
-    			// 	}else{
-    			// 		self.pos.db.notification('danger',"Please configure loyalty configuration.");
-    			// 	}
-    			// }else{
-    			// 	self.pos.db.notification('danger',"Please select customer.");
-    			// }
-       //      });
+            this.$('.js_redeem_loyalty').click(function(){
+    			var order = self.pos.get_order();
+    			if(order.getNetTotalTaxIncluded() <= 0){
+    				return
+    			}
+    			if(order.get_client()){
+    				if(self.pos.loyalty_config){
+    					if(order.get_client().total_remaining_points > 0){
+        					self.click_redeem_loyalty();
+        				} else {
+        					self.gui.show_popup('error',{
+        						title: _t("Loyalty Points"),
+        						body: _t(order.get_client().name + " have 0 points to redeem."),
+        					})
+        				}
+    				}else{
+    					self.pos.db.notification('danger',"Please configure loyalty configuration.");
+    				}
+    			}else{
+    				self.pos.db.notification('danger',"Please select customer.");
+    			}
+            });
             this.$('.js_gift_card').click(function(){
             	var order = self.pos.get_order();
             	if(order.getNetTotalTaxIncluded() <= 0){
@@ -2699,66 +2699,66 @@ odoo.define('flexibite_ee_advance.screens', function (require) {
     			qty = Number(qty).toFixed(2);
     			$('.cart-num').text(qty);
     		}
-    		// if(order.get_client()){
-		    //     if(this.pos.loyalty_config && this.pos.loyalty_config.points_based_on == 'product'){
-		    //     	var total_points = this.get_points_from_product();
-		    //     	if(this.el.querySelector('.loyalty_info_cart .value')){
-		    //     		this.el.querySelector('.loyalty_info_cart .value').textContent = this.format_currency(total_points);
-		    //     	}
-		    //     	order.set_loyalty_earned_point(total_points);
-		    //     	order.set_loyalty_earned_amount(order.get_loyalty_amount_by_point(total_points));
-		    //     } else if(this.pos.loyalty_config && this.pos.loyalty_config.points_based_on == 'order') {
-		    //     	if(order.get_total_with_tax() >=  this.pos.loyalty_config.minimum_purchase 
-		    //     			&& this.pos.loyalty_config.point_calculation > 0){
-		    //     		var total_points = this._calculate_loyalty_by_order();
-		    //     		if(total_points > 0){
-		    //     			if(this.el.querySelector('.loyalty_info_cart .value')){
-				  //       		this.el.querySelector('.loyalty_info_cart .value').textContent = this.format_currency(total_points);
-				  //       	}
-		    //     			order.set_loyalty_earned_point(total_points.toFixed(2));
-		    //     			order.set_loyalty_earned_amount(order.get_loyalty_amount_by_point(total_points));
-		    //     		}
-		    //     	} else if(order.get_total_with_tax() <  this.pos.loyalty_config.minimum_purchase){
-		    //     		order.set_loyalty_earned_point(0.00);
-		    //     	}
-		    //     }
-	     //    }
+    		if(order.get_client()){
+		        if(this.pos.loyalty_config && this.pos.loyalty_config.points_based_on == 'product'){
+		        	var total_points = this.get_points_from_product();
+		        	if(this.el.querySelector('.loyalty_info_cart .value')){
+		        		this.el.querySelector('.loyalty_info_cart .value').textContent = this.format_currency(total_points);
+		        	}
+		        	order.set_loyalty_earned_point(total_points);
+		        	order.set_loyalty_earned_amount(order.get_loyalty_amount_by_point(total_points));
+		        } else if(this.pos.loyalty_config && this.pos.loyalty_config.points_based_on == 'order') {
+		        	if(order.get_total_with_tax() >=  this.pos.loyalty_config.minimum_purchase 
+		        			&& this.pos.loyalty_config.point_calculation > 0){
+		        		var total_points = this._calculate_loyalty_by_order();
+		        		if(total_points > 0){
+		        			if(this.el.querySelector('.loyalty_info_cart .value')){
+				        		this.el.querySelector('.loyalty_info_cart .value').textContent = this.format_currency(total_points);
+				        	}
+		        			order.set_loyalty_earned_point(total_points.toFixed(2));
+		        			order.set_loyalty_earned_amount(order.get_loyalty_amount_by_point(total_points));
+		        		}
+		        	} else if(order.get_total_with_tax() <  this.pos.loyalty_config.minimum_purchase){
+		        		order.set_loyalty_earned_point(0.00);
+		        	}
+		        }
+	        }
     	},
-  //   	_calculate_loyalty_by_order: function(){
-		// 	var order = this.pos.get_order();
-		// 	return (order.get_total_with_tax() * this.pos.loyalty_config.point_calculation) / 100
-		// },
-// 		get_points_from_product: function(){
-// 			var self = this;
-// 			var order = this.pos.get_order();
-// 			var currentOrderline = order.get_orderlines()
-// 			var total_points = 0.00
-// 			_.each(currentOrderline, function(line){
-// 				var line_points = 0.00;
-// 				if(line.get_product().loyalty_point){
-// 					line_points = line.get_product().loyalty_point * line.get_quantity();;
-// 					total_points += line_points;
-// 				} else if(line.get_product().pos_categ_id){
-// 					var cat_point = self._get_points_from_categ(line.get_product().pos_categ_id[0]);
-// 					if (cat_point){
-// 						line_points = cat_point * line.get_quantity();
-// 						total_points += line_points;
-// 					}
-// 				}
-// //				line.set_line_loyalty_point(line_points);
-// //				line.set_line_loyalty_amount(self.get_loyalty_amount_by_point(line_points));
-// 			});
-// 			return total_points;
-// 		},
-		// _get_points_from_categ: function(categ_id){
-		// 	var category = this.pos.db.get_category_by_id(categ_id);
-		// 	if(category && category.loyalty_point){
-		// 		return category.loyalty_point;
-		// 	} else if(category.parent_id){
-		// 		this._get_points_from_categ(category.parent_id[0]);
-		// 	}
-		// 	return false;
-		// },
+    	_calculate_loyalty_by_order: function(){
+			var order = this.pos.get_order();
+			return (order.get_total_with_tax() * this.pos.loyalty_config.point_calculation) / 100
+		},
+		get_points_from_product: function(){
+			var self = this;
+			var order = this.pos.get_order();
+			var currentOrderline = order.get_orderlines()
+			var total_points = 0.00
+			_.each(currentOrderline, function(line){
+				var line_points = 0.00;
+				if(line.get_product().loyalty_point){
+					line_points = line.get_product().loyalty_point * line.get_quantity();;
+					total_points += line_points;
+				} else if(line.get_product().pos_categ_id){
+					var cat_point = self._get_points_from_categ(line.get_product().pos_categ_id[0]);
+					if (cat_point){
+						line_points = cat_point * line.get_quantity();
+						total_points += line_points;
+					}
+				}
+//				line.set_line_loyalty_point(line_points);
+//				line.set_line_loyalty_amount(self.get_loyalty_amount_by_point(line_points));
+			});
+			return total_points;
+		},
+		_get_points_from_categ: function(categ_id){
+			var category = this.pos.db.get_category_by_id(categ_id);
+			if(category && category.loyalty_point){
+				return category.loyalty_point;
+			} else if(category.parent_id){
+				this._get_points_from_categ(category.parent_id[0]);
+			}
+			return false;
+		},
     	render_orderline: function(orderline){
     		var self = this;
     		var el_node = self._super(orderline);

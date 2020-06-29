@@ -67,14 +67,14 @@
                         type="action" context="{'pos_session_id' : session_id}"/>
             </button>
              <notebook>
-                <!--  <page string="Loyalty">
+                 <page string="Loyalty">
                      <group col="4">
 	                     <field name="total_loyalty_earned_points" />
 		                 <field name="total_loyalty_earned_amount" />
 		                 <field name="total_loyalty_redeem_points" />
 		                 <field name="total_loyalty_redeem_amount" />
 	                 </group>
-                 </page> -->
+                 </page>
                  <page string="Delivery Details">
                      <group col="4">
                          <field name="is_delivery" readonly="1"/>

@@ -155,7 +155,7 @@
                             <span class='detail vat empty'>N/A</span>
                         </t>
                     </div>
-                   <!--  <t t-if="widget.pos.config.enable_pos_loyalty and widget.pos.get_cashier().access_pos_loyalty">
+                    <t t-if="widget.pos.config.enable_pos_loyalty and widget.pos.get_cashier().access_pos_loyalty">
 			            <div class='client-detail'>
 			                <span class='label'>Total loyalty Points</span>
 			                <t t-if='partner.total_remaining_points'>
@@ -165,7 +165,7 @@
 			                    <span class='detail client-loyalty empty'>N/A</span>
 			                </t>
 			            </div>
-		            </t> -->
+		            </t>
 <!-- 		            <t t-if="widget.pos.config.enable_order_reservation"> -->
 <!-- 			            <div class='client-detail'> -->
 <!-- 			                <span class='label'>Remaining Credit</span> -->

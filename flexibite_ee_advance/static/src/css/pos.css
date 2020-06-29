@@ -692,9 +692,6 @@ span.order-button.lock_button {
 .pos .modal-dialog .popup table td {
 	font-weight: normal;
 }
-.pos .pos-rightheader {
-    height: calc(100vh - 100px) !important;
-}
 
 .pos .pos-rightheader>* {
 	border-right: none;
