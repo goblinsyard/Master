@@ -10,7 +10,7 @@
 #################################################################################
 {
     'name': 'Odoo POS Restaurant (Enterprise)',
-    'version': '1.2.3',
+    'version': '1.2.1',
     'author': 'Acespritech Solutions Pvt. Ltd.',
     'summary': 'Odoo POS Restaurant',
     'description': "Odoo POS Restaurant",
@@ -39,7 +39,9 @@
         'views/pos_cache_views.xml',
         'views/product_view.xml',
         'views/account_view.xml',
-        'views/res_company_view.xml',        
+        'views/res_company_view.xml',
+        'views/loyalty_config_view.xml',
+        'views/loyalty_view.xml',
         'views/res_partner_view.xml',
         'views/gift_card.xml',
         'views/voucher_view.xml',

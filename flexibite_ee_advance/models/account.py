@@ -34,7 +34,8 @@ class account_journal(models.Model):
         return super(account_journal, self).name_search(name, args=args, operator=operator, limit=limit)
 
     shortcut_key = fields.Char('Shortcut Key')
-    jr_use_for = fields.Selection([       
+    jr_use_for = fields.Selection([
+        ('loyalty', "Loyalty"),
         ('gift_card', "Gift Card"),
         ('gift_voucher', "Gift Voucher"),
         ('rounding', "Rounding")

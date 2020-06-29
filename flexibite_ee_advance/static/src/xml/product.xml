@@ -1025,13 +1025,13 @@
                                 <t t-if="widget.pos and widget.pos.config.pos_promotion">
                                     <span class='discount promotion-disc extra_things' style="font-size: 12px;">Promo Disc: <span class="value">0.00€</span></span>
                                 </t>
-                                <!-- <t t-if="widget.pos and widget.pos.loyalty_config and widget.pos.config.enable_pos_loyalty and widget.pos.get_cashier().access_pos_loyalty">
+                                <t t-if="widget.pos and widget.pos.loyalty_config and widget.pos.config.enable_pos_loyalty and widget.pos.get_cashier().access_pos_loyalty">
                                     <span class="loyalty_info_cart extra_things" style="border-left: 1px solid;padding: 3px;font-size: 12px;">
 			                            <span class="label">Loyalty Points: <span class="value">
                                             <t t-esc="widget.format_currency(0)"/>
                                         </span></span>
 			                        </span>
-                                </t> -->
+                                </t>
 	                        </div>
 	                    </div>
 	                </div>

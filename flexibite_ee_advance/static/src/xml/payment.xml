@@ -240,11 +240,11 @@
                                     <i class='fa fa-archive' /> <a>Open Cashbox</a>
                                 </div>
                             </t>
-                            <!-- <t	t-if="widget.pos.config.enable_pos_loyalty and widget.pos.get_cashier().access_pos_loyalty">
+                            <t	t-if="widget.pos.config.enable_pos_loyalty and widget.pos.get_cashier().access_pos_loyalty">
 								<div class='control-button js_redeem_loyalty'>
 					                <i class='fa fa-gift' /> <a>Redeem Loyalty</a>
 					            </div>
-							</t> -->
+							</t>
 							<t	t-if="widget.pos.config and widget.pos.config.enable_order_note and widget.pos.get_cashier().access_order_note">
 							    <div class='control-button open_order_note_popup'>
                                     <a>Pre Order Note</a>
