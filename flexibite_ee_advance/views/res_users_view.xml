@@ -68,7 +68,7 @@
                         <field name="access_display_warehouse_qty"/>
                         <field name="access_pos_graph"/>
                         <field name="access_x_report"/>
-                        <field name="access_pos_loyalty"/>
+                        <!-- <field name="access_pos_loyalty"/> -->
                         <field name="access_today_sale_report"/>
                         <field name="access_money_in_out"/>
                         <field name="access_gift_card"/>

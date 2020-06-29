@@ -1243,115 +1243,117 @@ odoo.define('flexibite_ee_advance.popup', function (require) {
 	});
 	gui.define_popup({name:'conf_delivery', widget: ComformDeliveryPopupWidget});
 	
-    var RedeemLoyaltyPointsPopup = PopupWidget.extend({
-	    template: 'RedeemLoyaltyPointsPopup',
-	    show: function(options){
-	    	var self = this;
-	    	this.payment_self = options.payment_self;
-	    	this._super(options);
-	    	var order = self.pos.get_order();
-	    	var fields = _.find(this.pos.models,function(model){ return model.model === 'res.partner'; }).fields;
-	    	var params = {
-	    		model: 'res.partner',
-	    		method: 'search_read',
-	    		domain: [['id', '=', order.get_client().id]],
-	    		fields: fields,
-	    	}
-	    	rpc.query(params, {async: false})
-	    	.then(function(partner){
-	    		if(partner.length > 0){
-	    			var exist_partner = self.pos.db.get_partner_by_id(order.get_client().id);
-	    			_.extend(exist_partner, partner[0]);
-	    		}
-	    	}).fail(function(){
-            	self.pos.db.notification('danger',"Connection lost");
-            });
-	    	$('body').off('keypress', this.payment_self.keyboard_handler);
-        	$('body').off('keydown',this.payment_self.keyboard_keydown_handler);
-//	    	window.document.body.removeEventListener('keypress',this.payment_self.keyboard_handler);
-//	    	window.document.body.removeEventListener('keydown',this.payment_self.keyboard_keydown_handler);
-	    	self.renderElement();
-	    	$('.redeem_loyalty_input').focus();
-	    },
-	    click_confirm: function(){
-	    	var self =this;
-	    	var order = this.pos.get_order();
-	    	var redeem_point_input = $('.redeem_loyalty_input');
-	    	if(redeem_point_input.val() && $.isNumeric(redeem_point_input.val()) 
-	    			&& Number(redeem_point_input.val()) > 0){
-	    		var remaining_loyalty_points = order.get_client().remaining_loyalty_points - order.get_loyalty_redeemed_point();
-	    		if(Number(redeem_point_input.val()) <= remaining_loyalty_points){
-	    			var amount_to_redeem = (Number(redeem_point_input.val()) * self.pos.loyalty_config.to_amount) / self.pos.loyalty_config.points;
-	    			if(amount_to_redeem <= (order.get_due() || order.get_total_with_tax())){
-			    		if(self.pos.config.loyalty_journal_id){
-				    		var loyalty_cashregister = _.find(self.pos.cashregisters, function(cashregister){
-				    			return cashregister.journal_id[0] === self.pos.config.loyalty_journal_id[0] ? cashregister : false;
-				    		});
-				    		if(loyalty_cashregister){
-				    			order.add_paymentline(loyalty_cashregister);
-				    			order.selected_paymentline.set_amount(amount_to_redeem);
-				    			order.selected_paymentline.set_loyalty_point(Number(redeem_point_input.val()));
-				    			order.selected_paymentline.set_freeze_line(true);
-				    			self.payment_self.reset_input();
-				    			self.payment_self.render_paymentlines();
-				    			order.set_loyalty_redeemed_point(Number(order.get_loyalty_redeemed_point()) + Number(redeem_point_input.val()));
-				    			order.set_loyalty_redeemed_amount(order.get_loyalty_amount_by_point(order.get_loyalty_redeemed_point()));
-				    			this.gui.close_popup();
-				    		}
-			    		} else {
-			    			self.pos.db.notification('danger',_t("Please configure Journal for Loyalty in Point of sale configuration."));
-			    		}
-	    			}
-	    		} 
-	    	}
-	    },
-	    renderElement: function(){
-	    	var self = this;
-	    	this._super();
-	    	var order = self.pos.get_order();
-	    	if(self.el.querySelector('.redeem_loyalty_input')){
-		    	self.el.querySelector('.redeem_loyalty_input').addEventListener('keyup', function(e){
-		    		if($.isNumeric($(this).val())){
-		    			var val = this.value;
-		    	        var re = /^([0-9]+[\.]?[0-9]?[0-9]?|[0-9]+)$/g;
-		    	        var re1 = /^([0-9]+[\.]?[0-9]?[0-9]?|[0-9]+)/g;
-		    	        if (re.test(val)) {
-		    	            //do something here
-		    	        } else {
-		    	            val = re1.exec(val);
-		    	            if (val) {
-		    	                this.value = val[0];
-		    	            } else {
-		    	                this.value = "";
-		    	            }
-		    	        }
-		    			var remaining_loyalty_points = order.get_client().remaining_loyalty_points - order.get_loyalty_redeemed_point();
-		    			var amount = order.get_loyalty_amount_by_point(Number($(this).val()));
-		    			$('.point_to_amount').text(self.format_currency(amount));
-		    			if(Number($(this).val()) > remaining_loyalty_points){
-		    				self.pos.db.notification('danger',_t('Can not redeem more than your remaining points.'));
-		    				$(this).val(0);
-		    				$('.point_to_amount').text('0.00');
-		    			}
-		    			if(amount > (order.get_due() || order.get_total_with_tax())){
-		    				self.pos.db.notification('danger',_t('Loyalty Amount exceeding Due Amount.'));
-		    				$(this).val(0);
-		    				$('.point_to_amount').text('0.00');
-		    			}
-		    		} else {
-		    			$('.point_to_amount').text('0.00');
-		    		}
-		    	});
-	    	}
-	    },
-	    close: function(){
-	    	$('body').off('keypress', this.payment_self.keyboard_handler).keypress(this.payment_self.keyboard_handler);
-	        $('body').off('keypress', this.payment_self.keyboard_keydown_handler).keydown(this.payment_self.keyboard_keydown_handler);
-//	    	window.document.body.addEventListener('keypress',this.payment_self.keyboard_handler);
-//	    	window.document.body.addEventListener('keydown',this.payment_self.keyboard_keydown_handler);
-	    },
-    });
-    gui.define_popup({name:'redeem_loyalty_points', widget: RedeemLoyaltyPointsPopup});
+//     var RedeemLoyaltyPointsPopup = PopupWidget.extend({
+// 	    template: 'RedeemLoyaltyPointsPopup',
+// 	    show: function(options){
+// 	    	var self = this;
+// 	    	this.payment_self = options.payment_self;
+// 	    	this._super(options);
+// 	    	var order = self.pos.get_order();
+// 	    	// console.log("self.pos---->",self.pos.partner_fields)
+// 	    	// var fields = _.find(this.pos.models,function(model){ return model.model === 'res.partner'; }).fields;
+// 	    	var fields = self.pos.partner_fields;
+// 	    	var params = {
+// 	    		model: 'res.partner',
+// 	    		method: 'search_read',
+// 	    		domain: [['id', '=', order.get_client().id]],
+// 	    		fields: fields,
+// 	    	}
+// 	    	rpc.query(params, {async: false})
+// 	    	.then(function(partner){
+// 	    		if(partner.length > 0){
+// 	    			var exist_partner = self.pos.db.get_partner_by_id(order.get_client().id);
+// 	    			_.extend(exist_partner, partner[0]);
+// 	    		}
+// 	    	}).fail(function(){
+//             	self.pos.db.notification('danger',"Connection lost");
+//             });
+// 	    	$('body').off('keypress', this.payment_self.keyboard_handler);
+//         	$('body').off('keydown',this.payment_self.keyboard_keydown_handler);
+// //	    	window.document.body.removeEventListener('keypress',this.payment_self.keyboard_handler);
+// //	    	window.document.body.removeEventListener('keydown',this.payment_self.keyboard_keydown_handler);
+// 	    	self.renderElement();
+// 	    	$('.redeem_loyalty_input').focus();
+// 	    },
+// 	    click_confirm: function(){
+// 	    	var self =this;
+// 	    	var order = this.pos.get_order();
+// 	    	var redeem_point_input = $('.redeem_loyalty_input');
+// 	    	if(redeem_point_input.val() && $.isNumeric(redeem_point_input.val()) 
+// 	    			&& Number(redeem_point_input.val()) > 0){
+// 	    		var remaining_loyalty_points = order.get_client().remaining_loyalty_points - order.get_loyalty_redeemed_point();
+// 	    		if(Number(redeem_point_input.val()) <= remaining_loyalty_points){
+// 	    			var amount_to_redeem = (Number(redeem_point_input.val()) * self.pos.loyalty_config.to_amount) / self.pos.loyalty_config.points;
+// 	    			if(amount_to_redeem <= (order.get_due() || order.get_total_with_tax())){
+// 			    		if(self.pos.config.loyalty_journal_id){
+// 				    		var loyalty_cashregister = _.find(self.pos.cashregisters, function(cashregister){
+// 				    			return cashregister.journal_id[0] === self.pos.config.loyalty_journal_id[0] ? cashregister : false;
+// 				    		});
+// 				    		if(loyalty_cashregister){
+// 				    			order.add_paymentline(loyalty_cashregister);
+// 				    			order.selected_paymentline.set_amount(amount_to_redeem);
+// 				    			order.selected_paymentline.set_loyalty_point(Number(redeem_point_input.val()));
+// 				    			order.selected_paymentline.set_freeze_line(true);
+// 				    			self.payment_self.reset_input();
+// 				    			self.payment_self.render_paymentlines();
+// 				    			order.set_loyalty_redeemed_point(Number(order.get_loyalty_redeemed_point()) + Number(redeem_point_input.val()));
+// 				    			order.set_loyalty_redeemed_amount(order.get_loyalty_amount_by_point(order.get_loyalty_redeemed_point()));
+// 				    			this.gui.close_popup();
+// 				    		}
+// 			    		} else {
+// 			    			self.pos.db.notification('danger',_t("Please configure Journal for Loyalty in Point of sale configuration."));
+// 			    		}
+// 	    			}
+// 	    		} 
+// 	    	}
+// 	    },
+// 	    renderElement: function(){
+// 	    	var self = this;
+// 	    	this._super();
+// 	    	var order = self.pos.get_order();
+// 	    	if(self.el.querySelector('.redeem_loyalty_input')){
+// 		    	self.el.querySelector('.redeem_loyalty_input').addEventListener('keyup', function(e){
+// 		    		if($.isNumeric($(this).val())){
+// 		    			var val = this.value;
+// 		    	        var re = /^([0-9]+[\.]?[0-9]?[0-9]?|[0-9]+)$/g;
+// 		    	        var re1 = /^([0-9]+[\.]?[0-9]?[0-9]?|[0-9]+)/g;
+// 		    	        if (re.test(val)) {
+// 		    	            //do something here
+// 		    	        } else {
+// 		    	            val = re1.exec(val);
+// 		    	            if (val) {
+// 		    	                this.value = val[0];
+// 		    	            } else {
+// 		    	                this.value = "";
+// 		    	            }
+// 		    	        }
+// 		    			var remaining_loyalty_points = order.get_client().remaining_loyalty_points - order.get_loyalty_redeemed_point();
+// 		    			var amount = order.get_loyalty_amount_by_point(Number($(this).val()));
+// 		    			$('.point_to_amount').text(self.format_currency(amount));
+// 		    			if(Number($(this).val()) > remaining_loyalty_points){
+// 		    				self.pos.db.notification('danger',_t('Can not redeem more than your remaining points.'));
+// 		    				$(this).val(0);
+// 		    				$('.point_to_amount').text('0.00');
+// 		    			}
+// 		    			if(amount > (order.get_due() || order.get_total_with_tax())){
+// 		    				self.pos.db.notification('danger',_t('Loyalty Amount exceeding Due Amount.'));
+// 		    				$(this).val(0);
+// 		    				$('.point_to_amount').text('0.00');
+// 		    			}
+// 		    		} else {
+// 		    			$('.point_to_amount').text('0.00');
+// 		    		}
+// 		    	});
+// 	    	}
+// 	    },
+// 	    close: function(){
+// 	    	$('body').off('keypress', this.payment_self.keyboard_handler).keypress(this.payment_self.keyboard_handler);
+// 	        $('body').off('keypress', this.payment_self.keyboard_keydown_handler).keydown(this.payment_self.keyboard_keydown_handler);
+// //	    	window.document.body.addEventListener('keypress',this.payment_self.keyboard_handler);
+// //	    	window.document.body.addEventListener('keydown',this.payment_self.keyboard_keydown_handler);
+// 	    },
+//     });
+//     gui.define_popup({name:'redeem_loyalty_points', widget: RedeemLoyaltyPointsPopup});
 
     var TodayPosReportPopup = PopupWidget.extend({
 	    template: 'TodayPosReportPopup',
@@ -2845,6 +2847,7 @@ odoo.define('flexibite_ee_advance.popup', function (require) {
                      });
                 }
             });
+            $("#cash_details").show();
             this.$('.button.close_session').hide();
             this.$('.button.ok').click(function() {
                 var dict = [];
@@ -2873,14 +2876,8 @@ odoo.define('flexibite_ee_advance.popup', function (require) {
                         args:[self.pos.pos_session.id,dict]
                     }
                     rpc.query(params, {async: false}).then(function(res){
-                        if(res){
-                        	$("#cash_details").show();
-                        	$(".cashcontrol_td").each(function(index,el){
-                        		$(el).attr("disabled", "disabled")
-                            });
-                        	$(".button.cancel").hide();
-                        	$(".button.ok").hide()
-                        }
+                            if(res){
+                            }
                     }).fail(function (type, error){
                         if(error.code === 200 ){    // Business Logic Error, not a connection problem
                            self.gui.show_popup('error-traceback',{
@@ -2909,29 +2906,55 @@ odoo.define('flexibite_ee_advance.popup', function (require) {
                 });
     		});
             this.$('.button.close_session').click(function() {
-                self.gui.close_popup();
                 var params = {
                     model: 'pos.session',
                     method: 'custom_close_pos_session',
                     args:[self.pos.pos_session.id]
                 }
                 rpc.query(params, {async: false}).then(function(res){
-                    if(res){
-                        var pos_session_id = [self.pos.pos_session.id];
-                        self.pos.chrome.do_action('flexibite_ee_advance.pos_z_report',{
-                        	additional_context:{
-	                            active_ids:pos_session_id,
-	                        }
-                        });
-                        var cashier = self.pos.get_cashier() || self.pos.user;
-                    	if(cashier.login_with_pos_screen){
-	                        setTimeout(function(){
-	                            framework.redirect('/web/session/logout');
-	                        }, 5000);
-                    	}else{
-                    		self.pos.gui.close();
-                    	}
-                     }
+                	if(res){
+                        var cashier = self.pos.get_cashier();
+                        self.gui.close_popup();
+                        if(self.pos.config.z_report){
+                            var pos_session_id = [self.pos.pos_session.id];
+                            self.pos.chrome.do_action('flexiretail_ee_advance.pos_z_report',{
+                                additional_context:{
+                                    active_ids:pos_session_id,
+                                }
+                            }).fail(function(e){
+                                console.log("Error: ",e);
+                            });
+                            if(self.pos.config.iface_print_via_proxy){
+                                var report_name = "flexiretail_ee_advance.pos_z_thermal_report_template";
+                                var params = {
+                                    model: 'ir.actions.report',
+                                    method: 'get_html_report',
+                                    args: [pos_session_id[0], report_name],
+                                }
+                                rpc.query(params, {async: false})
+                                .then(function(report_html){
+                                    if(report_html && report_html[0]){
+                                        self.pos.proxy.print_receipt(report_html[0]);
+                                    }
+                                });
+                            }
+                            if(cashier && cashier.login_with_pos_screen){
+                                setTimeout(function(){
+                                    framework.redirect('/web/session/logout');
+                                }, 5000);
+                            }else{
+                                setTimeout(function(){
+                                    self.pos.gui.close();
+                                }, 5000);
+                            }
+                        } else{
+                            if(cashier && cashier.login_with_pos_screen){
+                                framework.redirect('/web/session/logout');
+                            }else{
+                                self.pos.gui.close();
+                            }
+                        }
+                    }
                 }).fail(function (type, error){
                     if(error.code === 200 ){    // Business Logic Error, not a connection problem
                        self.gui.show_popup('error-traceback',{
@@ -2949,20 +2972,13 @@ odoo.define('flexibite_ee_advance.popup', function (require) {
             var self = this;
             this._super();
             var selectedOrder = self.pos.get_order();
-            var cash_line_ids = self.pos.config.default_cashbox_lines_ids
-            var table_row = ""
-            _.each(cash_line_ids,function(id){
-            	var cash_line = self.pos.db.cash_box_line_by_id[id];
-            	if(cash_line){
-            		var table_row = "<tr id='cashcontrol_row'>" +
-                    "<td><input type='text'  class='cashcontrol_td coin' id='value' value='"+cash_line.coin_value+"' /></td>" + "<span id='errmsg'/>"+
-                    "<td><input type='text' class='cashcontrol_td no_of_coin' id='no_of_values' value='"+cash_line.number+"' /></td>" +
-                    "<td><input type='text' class='cashcontrol_td subtotal' id='subtotal' disabled='true' value='"+cash_line.subtotal+"' /></td>" +
-                    "<td id='delete_row'><span class='fa fa-trash-o'></span></td>" +
-                    "</tr>";
-                	$('#cashbox_data_table tbody').append(table_row);
-            	}
-            })
+            var table_row = "<tr id='cashcontrol_row'>" +
+                            "<td><input type='text'  class='cashcontrol_td coin' id='value' value='0.00' /></td>" + "<span id='errmsg'/>"+
+                            "<td><input type='text' class='cashcontrol_td no_of_coin' id='no_of_values' value='0.00' /></td>" +
+                            "<td><input type='text' class='cashcontrol_td subtotal' id='subtotal' disabled='true' value='0.00' /></td>" +
+                            "<td id='delete_row'><span class='fa fa-trash-o'></span></td>" +
+                            "</tr>";
+            $('#cashbox_data_table tbody').append(table_row);
             $('#add_new_item').click(function(){
                 $('#cashbox_data_table tbody').append(table_row);
             });

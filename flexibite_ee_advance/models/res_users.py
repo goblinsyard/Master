@@ -94,7 +94,7 @@ class ResUsers(models.Model):
 #     access_change_stock_locations = fields.Boolean("Change Stock Locations", default=True)
     access_pos_graph = fields.Boolean("POS Graph", default=True)
     access_x_report = fields.Boolean("X-Report", default=True)
-    access_pos_loyalty = fields.Boolean("Loyalty", default=True)
+    # access_pos_loyalty = fields.Boolean("Loyalty", default=True)
     access_today_sale_report = fields.Boolean("Today Sale Report", default=True)
     access_money_in_out = fields.Boolean("Money In/Out", default=True)
     access_gift_card = fields.Boolean('Gift Card', default=True)

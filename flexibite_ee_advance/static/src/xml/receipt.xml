@@ -608,6 +608,16 @@
             </t>
         </t>
         <t t-jquery="tr.emph" t-operation="replace">
+            <t t-if='receipt.loyalty and receipt.loyalty.points_total'>
+                <tr class="emph">
+                    <td class="pos-left-align">
+                        Total Points:
+                    </td>
+                    <td class="pos-right-align">
+                        <t t-esc='receipt.loyalty.points_total'/>
+                    </td>
+                </tr>
+            </t>
            <t t-if="order.get_order_id()">
                <tr class="emph">
                     <td>Total: </td>
@@ -622,7 +632,7 @@
                 </tr>
            </t>
            <t t-if="!order.get_order_id()">
-                <tr class="emph">
+                <tr class="emph">                
                     <td>Total:</td>
                     <td class="pos-right-align">
                         <t t-esc="widget.format_currency(order.get_total_with_tax())"/>
@@ -801,7 +811,7 @@
                 </table>
                 <hr/>
             </t>
-            <t t-if="widget.pos.config.enable_pos_loyalty and widget.pos.get_cashier().access_pos_loyalty 
+            <!-- <t t-if="widget.pos.config.enable_pos_loyalty and widget.pos.get_cashier().access_pos_loyalty 
                      and order.get_client() and order.get_total_loyalty_points() > 0">
                 <div class="pos-center-align">Loyalty Points</div>
                 <table>
@@ -839,7 +849,7 @@
                     </t>
                 </table>
                 <hr/>
-            </t>
+            </t> -->
             <t t-if="order.get_order_note()">
                 <br />
                 <div style='text-align:left'>
@@ -1176,9 +1186,9 @@
         </t>
         <!-- POS Reorder end here -->
 		<t t-jquery="receipt" t-operation="append">
-			<t t-if="widget.pos.config.enable_pos_loyalty and widget.pos.get_cashier().access_pos_loyalty">
+			<!-- <t t-if="widget.pos.config.enable_pos_loyalty and widget.pos.get_cashier().access_pos_loyalty">
 			    <t t-if="receipt.client_points or receipt.earned_points or receipt.redeem_points or receipt.total_points > 0">
-				    <div>-------------------------------------------</div>
+				    
 				    <div>Loyalty Points</div>
 					<t t-if="receipt.client_points">
 						<line>
@@ -1204,9 +1214,9 @@
 		                    <right><value><t t-esc='receipt.total_points' /></value></right>
 		                </line>
 		            </t>
-		            <div>-------------------------------------------</div>
+		            
 	            </t>
-            </t>
+            </t> -->
 		
 		    <t t-if="receipt.order_note">
 				<line>

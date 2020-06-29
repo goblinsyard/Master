@@ -17,7 +17,7 @@ from . import product
 from . import generate_product_ean13
 from . import pos_cache
 from . import stock
-from . import loyalty_config
+# from . import loyalty_config
 from . import account
 from . import res_partner
 from . import gift_card

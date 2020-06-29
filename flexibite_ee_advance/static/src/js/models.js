@@ -14,24 +14,23 @@ odoo.define('flexibite_ee_advance.models', function (require) {
 	                                 'access_order_note','access_product_note','access_pos_return','access_reorder',
 	                                 'access_draft_order','access_rounding','access_bag_charges','access_delivery_charges',
 	                                 'access_pos_lock','access_keyboard_shortcut','access_product_sync','access_display_warehouse_qty',
-	                                 'access_pos_graph','access_x_report','access_pos_loyalty',
+	                                 'access_pos_graph','access_x_report',
 	                                 'access_today_sale_report','access_money_in_out','access_gift_card','access_gift_voucher',
 	                                 'access_print_last_receipt','access_pos_promotion','lock_terminal','delete_msg_log','access_show_qty',
 	                                 'access_print_valid_days','access_card_charges','access_wallet','access_send_order_kitchen',
 	                                 'access_modifiers','access_takeaway','access_merge_table','login_with_pos_screen','access_combo','access_pos_dashboard',
 	                                 'user_role','pos_category_ids','access_out_of_stock_details','access_int_trans','shop_ids',
 	                                 'allow_switch_store','sales_persons','rfid_no']);
-	models.load_fields("res.partner", ['prefer_ereceipt','remaining_loyalty_points','remaining_credit_amount','property_account_receivable_id','parent_id',
-	                                   'remaining_loyalty_amount', 'loyalty_points_earned',
-	                                   'total_remaining_points','remaining_wallet_amount','remaining_debit_amount','debit_limit']);
-	models.load_fields("product.product", ['qty_available','type','is_packaging','loyalty_point',
+	models.load_fields("res.partner", ['prefer_ereceipt','remaining_credit_amount','property_account_receivable_id','parent_id',
+	                                   'remaining_wallet_amount','remaining_debit_amount','debit_limit']);
+	models.load_fields("product.product", ['qty_available','type','is_packaging',
 	                                       'is_dummy_product','modifier_line','is_combo','product_combo_ids','return_valid_days','non_refundable','send_to_kitchen',
 	                                       'priority','attribute_value_ids', 'lst_price','write_date']);
 	models.load_fields("product.category", ['complete_name']);
 	models.load_fields('pos.session',['is_lock_screen','current_cashier_id','locked','locked_by_user_id','opening_balance','increment_number','shop_id']);
 	models.load_fields("account.journal", ['shortcut_key','jr_use_for','apply_charges','fees_amount','fees_type','optional','pos_journal_id','is_online_journal']);
     models.load_fields("res.company", ['payment_total','pos_price', 'pos_quantity', 'pos_discount', 'pos_search', 'pos_next']);
-    models.load_fields("pos.category", ['loyalty_point','return_valid_days']);
+    models.load_fields("pos.category", ['return_valid_days']);
     models.load_fields("pos.order", ['is_delivery'], ['picking_id']);
 
 	models.PosModel.prototype.models.push({
@@ -618,20 +617,20 @@ odoo.define('flexibite_ee_advance.models', function (require) {
 	                	self.pos.db.notification('danger',"Connection lost");
 	                });
 				}
-	        	if(self.user.access_pos_loyalty && self.config.enable_pos_loyalty){
-	        		var params = {
-    					model: 'loyalty.config.settings',
-    					method: 'load_loyalty_config_settings',
-    				}
-    				rpc.query(params)
-    		    	.then(function(loyalty_config){
-    		    		if(loyalty_config && loyalty_config[0]){
-    		    			self.loyalty_config = loyalty_config[0];
-    		    		}
-    		    	}).fail(function(){
-                    	self.db.notification('danger',"Connection lost");
-                    });
-	        	}
+	       //  	if(self.user.access_pos_loyalty && self.config.enable_pos_loyalty){
+	       //  		var params = {
+    				// 	model: 'loyalty.config.settings',
+    				// 	method: 'load_loyalty_config_settings',
+    				// }
+    				// rpc.query(params)
+    		  //   	.then(function(loyalty_config){
+    		  //   		if(loyalty_config && loyalty_config[0]){
+    		  //   			self.loyalty_config = loyalty_config[0];
+    		  //   		}
+    		  //   	}).fail(function(){
+        //             	self.db.notification('danger',"Connection lost");
+        //             });
+	       //  	}
 	        	if(self.user.access_gift_card && self.config.enable_gift_card){
 	        		var gift_card_params = {
                     	model: 'aspl.gift.card',
@@ -1129,9 +1128,7 @@ odoo.define('flexibite_ee_advance.models', function (require) {
                 ret_o_id:       null,
                 ret_o_ref:      null,
                 sale_mode:      true,
-                missing_mode:   false,
-                loyalty_redeemed_point: 0.00,
-        		loyalty_earned_point: 0.00,
+                missing_mode:   false,                
         		type_for_wallet: false,
                 change_amount_for_wallet: false,
                 use_wallet: false,
@@ -2813,35 +2810,35 @@ odoo.define('flexibite_ee_advance.models', function (require) {
          	}
         },
 	    //loyalty
-	    set_loyalty_redeemed_point: function(val){
-    		this.set('loyalty_redeemed_point', Number(val).toFixed(2));
-    	},
-    	get_loyalty_redeemed_point: function(){
-    		return this.get('loyalty_redeemed_point') || 0.00;
-    	},
-    	set_loyalty_redeemed_amount: function(val){
-    		this.set('loyalty_redeemed_amount', val);
-    	},
-    	get_loyalty_redeemed_amount: function(){
-    		return this.get('loyalty_redeemed_amount') || 0.00;
-    	},
-    	set_loyalty_earned_point: function(val){
-    		this.set('loyalty_earned_point', val);
-    	},
-    	get_loyalty_earned_point: function(){
-    		return this.get('loyalty_earned_point') || 0.00;
-    	},
-    	set_loyalty_earned_amount: function(val){
-    		this.set('loyalty_earned_amount', val);
-    	},
-    	get_loyalty_earned_amount: function(){
-    		return this.get('loyalty_earned_amount') || 0.00;
-    	},
-    	get_loyalty_amount_by_point: function(point){
-    		if(this.pos.loyalty_config){
-    			return (point * this.pos.loyalty_config.to_amount) / this.pos.loyalty_config.points;
-    		}
-	    },
+	    // set_loyalty_redeemed_point: function(val){
+    	// 	this.set('loyalty_redeemed_point', Number(val).toFixed(2));
+    	// },
+    	// get_loyalty_redeemed_point: function(){
+    	// 	return this.get('loyalty_redeemed_point') || 0.00;
+    	// },
+    	// set_loyalty_redeemed_amount: function(val){
+    	// 	this.set('loyalty_redeemed_amount', val);
+    	// },
+    	// get_loyalty_redeemed_amount: function(){
+    	// 	return this.get('loyalty_redeemed_amount') || 0.00;
+    	// },
+    	// set_loyalty_earned_point: function(val){
+    	// 	this.set('loyalty_earned_point', val);
+    	// },
+    	// get_loyalty_earned_point: function(){
+    	// 	return this.get('loyalty_earned_point') || 0.00;
+    	// },
+    	// set_loyalty_earned_amount: function(val){
+    	// 	this.set('loyalty_earned_amount', val);
+    	// },
+    	// get_loyalty_earned_amount: function(){
+    	// 	return this.get('loyalty_earned_amount') || 0.00;
+    	// },
+    	// get_loyalty_amount_by_point: function(point){
+    	// 	if(this.pos.loyalty_config){
+    	// 		return (point * this.pos.loyalty_config.to_amount) / this.pos.loyalty_config.points;
+    	// 	}
+	    // },
 	    set_giftcard: function(giftcard) {
             this.giftcard.push(giftcard)
         },
@@ -3129,10 +3126,10 @@ odoo.define('flexibite_ee_advance.models', function (require) {
         		delivery_time: this.get_delivery_time(),
         		delivery_address: this.get_delivery_address(),
         		delivery_charge_amt: this.get_delivery_charge_amt(),
-        		loyalty_redeemed_point: this.get_loyalty_redeemed_point() || false,
-            	loyalty_redeemed_amount: this.get_loyalty_redeemed_amount() || false,
-            	loyalty_earned_point: this.get_loyalty_earned_point() || false,
-            	loyalty_earned_amount: this.get_loyalty_earned_amount() || false,
+        		// loyalty_redeemed_point: this.get_loyalty_redeemed_point() || false,
+          //   	loyalty_redeemed_amount: this.get_loyalty_redeemed_amount() || false,
+          //   	loyalty_earned_point: this.get_loyalty_earned_point() || false,
+          //   	loyalty_earned_amount: this.get_loyalty_earned_amount() || false,
             	giftcard: this.get_giftcard() || false,
                 redeem: this.get_redeem_giftcard() || false,
                 recharge: this.get_recharge_giftcard() || false,
@@ -3190,10 +3187,10 @@ odoo.define('flexibite_ee_advance.models', function (require) {
             	date_order: this.get_date_order() || false,
             	rounding: this.get_rounding(),
             	net_amount: this.getNetTotalTaxIncluded(),
-            	total_points: this.get_total_loyalty_points() || false,
-    			earned_points: this.get_loyalty_earned_point() || false,
-    			redeem_points: this.get_loyalty_redeemed_point() || false,
-    			client_points: this.get_client() ? this.get_client().total_remaining_points.toFixed(2) : false,
+       //      	total_points: this.get_total_loyalty_points() || false,
+    			// earned_points: this.get_loyalty_earned_point() || false,
+    			// redeem_points: this.get_loyalty_redeemed_point() || false,
+    			// client_points: this.get_client() ? this.get_client().total_remaining_points.toFixed(2) : false,
 				giftcard: this.get_giftcard() || false,
                 recharge: this.get_recharge_giftcard() || false,
                 redeem:this.get_redeem_giftcard() || false,
@@ -3230,19 +3227,19 @@ odoo.define('flexibite_ee_advance.models', function (require) {
         	return  this.return_reason;
         },
         remove_paymentline: function(line){
-    		this.set_loyalty_redeemed_point(this.get_loyalty_redeemed_point() - line.get_loyalty_point());
-    		this.set_loyalty_redeemed_amount(this.get_loyalty_amount_by_point(this.get_loyalty_redeemed_point()));
+    		// this.set_loyalty_redeemed_point(this.get_loyalty_redeemed_point() - line.get_loyalty_point());
+    		// this.set_loyalty_redeemed_amount(this.get_loyalty_amount_by_point(this.get_loyalty_redeemed_point()));
     		_super_Order.remove_paymentline.apply(this, arguments);
     	},
-    	get_total_loyalty_points: function(){
-    		var temp = 0.00
-    		if(this.get_client()){
-	    		temp = Number(this.get_client().total_remaining_points) 
-	    				+ Number(this.get_loyalty_earned_point()) 
-	    				- Number(this.get_loyalty_redeemed_point())
-    		}
-    		return temp.toFixed(2)
-    	},
+    	// get_total_loyalty_points: function(){
+    	// 	var temp = 0.00
+    	// 	if(this.get_client()){
+	    // 		temp = Number(this.get_client().total_remaining_points) 
+	    // 				+ Number(this.get_loyalty_earned_point()) 
+	    // 				- Number(this.get_loyalty_redeemed_point())
+    	// 	}
+    	// 	return temp.toFixed(2)
+    	// },
 		set_order_on_debit: function(order_on_debit){
 			this.order_on_debit = order_on_debit;
 		},
@@ -3802,23 +3799,23 @@ odoo.define('flexibite_ee_advance.models', function (require) {
        initialize: function(attributes, options) {
            var self = this;
            _super_paymentline.initialize.apply(this, arguments);
-           this.set({
-        		   loyalty_point: 0,
-        		   loyalty_amount: 0.00,
-           });
+           // this.set({
+        		 //   loyalty_point: 0,
+        		 //   loyalty_amount: 0.00,
+           // });
         },
-        set_loyalty_point: function(points){
-        	this.set('loyalty_point', points)
-        },
-        get_loyalty_point: function(){
-        	return this.get('loyalty_point')
-        },
-        set_loyalty_amount: function(amount){
-        	this.set('loyalty_amount', amount)
-        },
-        get_loyalty_amount: function(){
-        	return this.get('loyalty_amount')
-        },
+        // set_loyalty_point: function(points){
+        // 	this.set('loyalty_point', points)
+        // },
+        // get_loyalty_point: function(){
+        // 	return this.get('loyalty_point')
+        // },
+        // set_loyalty_amount: function(amount){
+        // 	this.set('loyalty_amount', amount)
+        // },
+        // get_loyalty_amount: function(){
+        // 	return this.get('loyalty_amount')
+        // },
         set_freeze_line: function(freeze_line){
         	this.set('freeze_line', freeze_line)
         },

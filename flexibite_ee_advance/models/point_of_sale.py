@@ -1051,7 +1051,7 @@ class pos_order(models.Model):
             return super(pos_order, self).action_pos_order_paid()
 
     @api.model
-    def create_from_ui(self, orders):
+    def create_from_ui(self, orders):        
         #Credit module
         for each_data in orders:
             credit_details = each_data['data'].get('credit_detail')
@@ -1071,6 +1071,8 @@ class pos_order(models.Model):
                 self._match_payment_to_invoice(order)
             pos_order = self._process_order(order)
             # create giftcard record
+            if pos_order.loyalty_points != 0 and pos_order.partner_id:
+                pos_order.partner_id.loyalty_points += pos_order.loyalty_points
             if order.get('giftcard'):
                 for create_details in order.get('giftcard'):
                     expiry_date = datetime.strptime(create_details.get('giftcard_expire_date'),'%Y/%m/%d').strftime('%Y-%m-%d')
@@ -1219,7 +1221,7 @@ class pos_order(models.Model):
                     cash_journal = cash_journal_ids[0].journal_id
                 order_obj.add_payment({
                     'amount': -order['amount_return'],
-                    'payment_date': fields.Datetime.now(),
+                    'payment_date': time.strftime('%Y-%m-%d %H:%M:%S'),
                     'payment_name': _('return'),
                     'journal': cash_journal.id,
                 })
@@ -1228,32 +1230,32 @@ class pos_order(models.Model):
             res = super(pos_order, self)._process_order(order)
             if res:
                 self.wallet_management(order,res)
-            if res.session_id.config_id.enable_pos_loyalty and res.partner_id:
-                loyalty_settings = self.env['loyalty.config.settings'].load_loyalty_config_settings()
-                if loyalty_settings and loyalty_settings[0]:
-                    if loyalty_settings[0].get('points_based_on') and order.get('loyalty_earned_point'):
-                        point_vals = {
-                            'pos_order_id': res.id,
-                            'partner_id': res.partner_id.id,
-                            'points': order.get('loyalty_earned_point'),
-                            'amount_total': (float(order.get('loyalty_earned_point')) * loyalty_settings[0].get('to_amount')) / loyalty_settings[0].get('points')
-                        }
-                        loyalty = self.env['loyalty.point'].create(point_vals)
-                        if loyalty and res.partner_id.send_loyalty_mail:
-                            try:
-                                template_id = self.env['ir.model.data'].get_object_reference('flexibite_ee_advance', 'email_template_pos_loyalty')
-                                template_obj = self.env['mail.template'].browse(template_id[1])
-                                template_obj.send_mail(loyalty.id,force_send=True, raise_exception=True)
-                            except Exception as e:
-                                _logger.error('Unable to send email for order %s',e)
-                    if order.get('loyalty_redeemed_point'):
-                        redeemed_vals = {
-                            'redeemed_pos_order_id': res.id,
-                            'partner_id': res.partner_id.id,
-                            'redeemed_amount_total': self._calculate_amount_total_by_points(loyalty_settings, order.get('loyalty_redeemed_point')),
-                            'redeemed_point': order.get('loyalty_redeemed_point'),
-                        }
-                        self.env['loyalty.point.redeem'].create(redeemed_vals)
+            # if res.session_id.config_id.enable_pos_loyalty and res.partner_id:
+            #     loyalty_settings = self.env['loyalty.config.settings'].load_loyalty_config_settings()
+            #     if loyalty_settings and loyalty_settings[0]:
+            #         if loyalty_settings[0].get('points_based_on') and order.get('loyalty_earned_point'):
+            #             point_vals = {
+            #                 'pos_order_id': res.id,
+            #                 'partner_id': res.partner_id.id,
+            #                 'points': order.get('loyalty_earned_point'),
+            #                 'amount_total': (float(order.get('loyalty_earned_point')) * loyalty_settings[0].get('to_amount')) / loyalty_settings[0].get('points')
+            #             }
+            #             loyalty = self.env['loyalty.point'].create(point_vals)
+            #             if loyalty and res.partner_id.send_loyalty_mail:
+            #                 try:
+            #                     template_id = self.env['ir.model.data'].get_object_reference('flexibite_ee_advance', 'email_template_pos_loyalty')
+            #                     template_obj = self.env['mail.template'].browse(template_id[1])
+            #                     template_obj.send_mail(loyalty.id,force_send=True, raise_exception=True)
+            #                 except Exception as e:
+            #                     _logger.error('Unable to send email for order %s',e)
+            #         if order.get('loyalty_redeemed_point'):
+            #             redeemed_vals = {
+            #                 'redeemed_pos_order_id': res.id,
+            #                 'partner_id': res.partner_id.id,
+            #                 'redeemed_amount_total': self._calculate_amount_total_by_points(loyalty_settings, order.get('loyalty_redeemed_point')),
+            #                 'redeemed_point': order.get('loyalty_redeemed_point'),
+            #             }
+            #             self.env['loyalty.point.redeem'].create(redeemed_vals)
             if order.get('customer_email') and res:
                 try:
                     template_id = self.env['ir.model.data'].get_object_reference('flexibite_ee_advance', 'email_template_pos_ereceipt')
@@ -1483,10 +1485,10 @@ class pos_order(models.Model):
             'delivery_time':        ui_order.get('delivery_time') or False,
             'delivery_address':     ui_order.get('delivery_address') or False,
             'delivery_charge_amt':     ui_order.get('delivery_charge_amt') or False,
-            'total_loyalty_earned_points': ui_order.get('loyalty_earned_point') or 0.00,
-            'total_loyalty_earned_amount': ui_order.get('loyalty_earned_amount') or 0.00,
-            'total_loyalty_redeem_points': ui_order.get('loyalty_redeemed_point') or 0.00,
-            'total_loyalty_redeem_amount': ui_order.get('loyalty_redeemed_amount') or 0.00,
+            # 'total_loyalty_earned_points': ui_order.get('loyalty_earned_point') or 0.00,
+            # 'total_loyalty_earned_amount': ui_order.get('loyalty_earned_amount') or 0.00,
+            # 'total_loyalty_redeem_points': ui_order.get('loyalty_redeemed_point') or 0.00,
+            # 'total_loyalty_redeem_amount': ui_order.get('loyalty_redeemed_amount') or 0.00,
             'partial_pay': ui_order.get('partial_pay') or False,
             'table_ids': [(6, 0, ui_order.get('table_ids')  or [])],
             'rating': ui_order.get('rating'),
@@ -1522,8 +1524,8 @@ class pos_order(models.Model):
         if order_id.rounding != 0:
             if rounding_journal_id:
                 order_id.add_payment({
-                    'amount': order_id.rounding * -1,
-                    'payment_date': fields.Datetime.now(),
+                    'amount':order_id.rounding * -1,
+                    'payment_date': time.strftime('%Y-%m-%d %H:%M:%S'),
                     'payment_name': _('Rounding'),
                     'journal': rounding_journal_id.id,
                 })
@@ -1622,53 +1624,53 @@ class pos_order(models.Model):
 
         return res
 
-    def _calculate_amount_total_by_points(self, loyalty_config, points):
-        return (float(points) * loyalty_config[0].get('to_amount')) / (loyalty_config[0].get('points') or 1)
+    # def _calculate_amount_total_by_points(self, loyalty_config, points):
+    #     return (float(points) * loyalty_config[0].get('to_amount')) / (loyalty_config[0].get('points') or 1)
 
-    def get_point_from_category(self, categ_id):
-        if categ_id.loyalty_point:
-            return categ_id.loyalty_point
-        elif categ_id.parent_id:
-            self.get_point_from_category(categ_id.parent_id)
-        return False
+    # def get_point_from_category(self, categ_id):
+    #     if categ_id.loyalty_point:
+    #         return categ_id.loyalty_point
+    #     elif categ_id.parent_id:
+    #         self.get_point_from_category(categ_id.parent_id)
+    #     return False
 
-    def _calculate_loyalty_points_by_order(self, loyalty_config):
-        if loyalty_config.point_calculation:
-            earned_points = self.amount_total * loyalty_config.point_calculation / 100
-            amount_total = (earned_points * loyalty_config.to_amount) / loyalty_config.points
-            return {
-                'points': earned_points,
-                'amount_total': amount_total
-            }
-        return False
+    # def _calculate_loyalty_points_by_order(self, loyalty_config):
+    #     if loyalty_config.point_calculation:
+    #         earned_points = self.amount_total * loyalty_config.point_calculation / 100
+    #         amount_total = (earned_points * loyalty_config.to_amount) / loyalty_config.points
+    #         return {
+    #             'points': earned_points,
+    #             'amount_total': amount_total
+    #         }
+    #     return False
 
-    @api.multi
-    def refund(self):
-        res = super(pos_order, self).refund()
-        LoyaltyPoints = self.env['loyalty.point']
-        refund_order_id = self.browse(res.get('res_id'))
-        if refund_order_id:
-            LoyaltyPoints.create({
-                'pos_order_id': refund_order_id.id,
-                'partner_id': self.partner_id.id,
-                'points': refund_order_id.total_loyalty_redeem_points,
-                'amount_total': refund_order_id.total_loyalty_redeem_amount,
-            })
+    # @api.multi
+    # def refund(self):
+    #     res = super(pos_order, self).refund()
+    #     LoyaltyPoints = self.env['loyalty.point']
+    #     refund_order_id = self.browse(res.get('res_id'))
+    #     if refund_order_id:
+    #         LoyaltyPoints.create({
+    #             'pos_order_id': refund_order_id.id,
+    #             'partner_id': self.partner_id.id,
+    #             'points': refund_order_id.total_loyalty_redeem_points,
+    #             'amount_total': refund_order_id.total_loyalty_redeem_amount,
+    #         })
 
-            LoyaltyPoints.create({
-                'pos_order_id': refund_order_id.id,
-                'partner_id': self.partner_id.id,
-                'points': refund_order_id.total_loyalty_earned_points * -1,
-                'amount_total': refund_order_id.total_loyalty_earned_amount * -1,
-            })
+    #         LoyaltyPoints.create({
+    #             'pos_order_id': refund_order_id.id,
+    #             'partner_id': self.partner_id.id,
+    #             'points': refund_order_id.total_loyalty_earned_points * -1,
+    #             'amount_total': refund_order_id.total_loyalty_earned_amount * -1,
+    #         })
 
-            refund_order_id.write({
-                'total_loyalty_earned_points': refund_order_id.total_loyalty_earned_points * -1,
-                'total_loyalty_earned_amount': refund_order_id.total_loyalty_earned_amount * -1,
-                'total_loyalty_redeem_points': 0.00,
-                'total_loyalty_redeem_amount': 0.00,
-            })
-        return res
+    #         refund_order_id.write({
+    #             'total_loyalty_earned_points': refund_order_id.total_loyalty_earned_points * -1,
+    #             'total_loyalty_earned_amount': refund_order_id.total_loyalty_earned_amount * -1,
+    #             'total_loyalty_redeem_points': 0.00,
+    #             'total_loyalty_redeem_amount': 0.00,
+    #         })
+    #     return res
 
 # POS Reorder start here
     @api.model
@@ -1991,10 +1993,10 @@ class pos_order(models.Model):
     delivery_time = fields.Char("Delivery Time")
     delivery_address = fields.Char("Delivery Address")
     delivery_charge_amt = fields.Float("Delivery Charge")
-    total_loyalty_earned_points = fields.Float("Earned Loyalty Points")
-    total_loyalty_earned_amount = fields.Float("Earned Loyalty Amount")
-    total_loyalty_redeem_points = fields.Float("Redeemed Loyalty Points")
-    total_loyalty_redeem_amount = fields.Float("Redeemed Loyalty Amount")
+    # total_loyalty_earned_points = fields.Float("Earned Loyalty Points")
+    # total_loyalty_earned_amount = fields.Float("Earned Loyalty Amount")
+    # total_loyalty_redeem_points = fields.Float("Redeemed Loyalty Points")
+    # total_loyalty_redeem_amount = fields.Float("Redeemed Loyalty Amount")
     picking_ids = fields.Many2many(
             "stock.picking",
             string="Multiple Picking",
