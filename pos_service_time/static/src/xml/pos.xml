@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+<t t-name="TimeServicePopup" >
+    <div role="dialog" class="modal-dialog">
+        <div class="popup popup-textinput">
+            <header class="title"><t t-esc=" widget.options.title || '' " />
+            </header>
+            <main class="body"><t t-esc="  widget.options.body || '' "/></main>
+            <footer class="footer">
+                <div class="button cancel">
+                    Ok
+                </div>
+            </footer>
+        </div>
+    </div>
+</t>
+<t t-extend="Orderline">
+   <t t-jquery=".info-list" t-operation="inner">
+        <t t-if="line.product.variant_name &amp; (line.product.service_time_type != false)">
+            <li>
+                <div style="display: inline-block;width:90%;">
+                    <span>
+                        <em>
+                            <t t-esc="line.get_quantity()" />
+                        </em>
+                        <span>Service(s)</span>
+                        at
+                        <t t-esc="widget.format_currency(line.get_unit_display_price(),'Product Price')" />
+                        /
+                        <span><t t-esc="line.product.variant_name"/></span>
+                        <t t-if="line.get_discount_str() !== '0'">
+                            <li class="info">
+                                With a
+                                <em>
+                                    <t t-esc="line.get_discount_str()" />%
+                                </em>
+                                discount
+                            </li>
+                        </t>
+                    </span>
+                    <br></br>
+                    <i t-attf-class="#{line.time_init == true and line.time_end == false  ? 'icon-time-play fa fa-clock-o' : 'icon-time-stop fa fa-clock-o' }" aria-hidden="true"></i>
+                    <span class="pst-timer">
+                        <t t-esc="line.usage_time"/>
+                    </span>
+                </div>
+                <div style="display: inline-block;">
+                    <span t-attf-class="#{line.time_init == true and line.time_end == false  ? 'pst-checkout' : 'pst-checkin' } ">
+                        <i aria-hidden="true" t-attf-class="fa #{line.time_init == true and line.time_end == false ?'fa-stop-circle-o' : 'fa-play-circle-o' } "/>
+                   </span>
+                </div>
+            </li>
+        </t>
+        <t t-elif="line.product.service_time_type != false">
+             <li>
+                <div style="display: inline-block;width:90%;">
+                    <span>
+                        <em>
+                            <t t-esc="line.get_quantity()" />
+                        </em>
+                        <span t-esc="line.product.service_time_type == 'hour'?'Hour(s)':'Minute(s)'"/>
+                        at
+                            <t t-esc="widget.format_currency(line.get_unit_display_price(),'Product Price')" />
+                        /
+                        <span t-esc="line.product.service_time_type == 'hour'?'Hour(s)':'Minute(s)'"/>
+                        <t t-if="line.get_discount_str() !== '0'">
+                            <li class="info">
+                                With a
+                                <em>
+                                    <t t-esc="line.get_discount_str()" />%
+                                </em>
+                                discount
+                            </li>
+                        </t>
+                    </span>
+                    <br></br>
+                    <i t-attf-class="#{line.time_init == true and line.time_end == false  ? 'icon-time-play fa fa-clock-o' : 'icon-time-stop fa fa-clock-o' }" aria-hidden="true"></i>
+                    <span  t-attf-class="pst-timer">
+                        <t t-esc="line.usage_time"/>
+                    </span>
+                </div>
+                <div style="display: inline-block;">
+                    <span t-attf-class="#{line.time_init == true and line.time_end == false  ? 'pst-checkout' : 'pst-checkin' } ">
+                        <i aria-hidden="true" t-attf-class="fa #{line.time_init == true and line.time_end == false ?'fa-stop-circle-o' : 'fa-play-circle-o' } "/>
+                   </span>
+
+                </div>
+            </li>
+        </t>
+        <t t-else="">
+            <t t-if="line.get_quantity_str() !== '1' || line.selected ">
+                <li class="info">
+                    <em>
+                        <t t-esc="line.get_quantity_str()" />
+                    </em>
+                    <t t-esc="line.get_unit().name" />
+                    at
+                    <t t-esc="widget.format_currency(line.get_unit_display_price(),'Product Price')" />
+                    /
+                    <t t-esc="line.get_unit().name" />
+                </li>
+            </t>
+            <t t-if="line.get_discount_str() !== '0'">
+                <li class="info">
+                    With a
+                    <em>
+                        <t t-esc="line.get_discount_str()" />%
+                    </em>
+                    discount
+                </li>
+            </t>
+        </t>
+   </t>
+</t>
+<t t-extend="PosTicket">
+    <t t-jquery="t[t-esc*='orderline.get_product().display_name']" t-operation="after">
+        <t t-if="orderline.product.service_time_type and widget.pos.config.check_time_ticket">
+            <br></br><span> -Time: </span><t t-esc="orderline.usage_time"/>
+       </t>
+    </t>
+</t>
+
+</templates>

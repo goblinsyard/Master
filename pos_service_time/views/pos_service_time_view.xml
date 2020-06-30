@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    <record id="pos_service_time_form_extend" model="ir.ui.view">
+            <field name="name">pos.service.time.form.extend</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="point_of_sale.product_template_form_view"/>
+            <field name="arch" type="xml">
+               <xpath expr="//group[@name='pos']/group/field[@name='to_weight']" position="after">
+                   <field name="service_time_type" widget="selection"  attrs="{'invisible': [('available_in_pos', '=', False)]}"/>
+                </xpath>
+
+            </field>
+    </record>
+
+    <record id="product_template_form_view_extend" model="ir.ui.view">
+            <field name="name">pos.service.time.form.product.extend</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+               <xpath expr="//group[@name='group_standard_price']/field[@name='list_price']" position="replace">
+                    <label for="list_price" attrs="{'invisible': ['|',('service_time_type', '!=', 'hour'),('service_time_type', '=', False)]}"/>
+                    <div attrs="{'invisible': ['|',('service_time_type', '!=', 'hour'),('service_time_type', '=', False)]}">
+                        <field name="list_price" widget="monetary" options="{'currency_field': 'currency_id'}" style="width: auto;"/>
+                        Per Hour(/hr)
+                    </div>
+                   <label for="list_price" attrs="{'invisible': ['|',('service_time_type', '!=', 'minute'),('service_time_type', '=', False)]}"/>
+                    <div attrs="{'invisible': ['|',('service_time_type', '!=', 'minute'),('service_time_type', '=', False)]}">
+                        <field name="list_price" widget="monetary" options="{'currency_field': 'currency_id'}" style="width: auto;"/>
+                        Per Minute(/min)
+                    </div>
+                <field name="list_price" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible': [('service_time_type', '!=', False)]}"/>
+               </xpath>
+            </field>
+    </record>
+
+    <record id="pos_config_view_form_inherit" model="ir.ui.view">
+        <field name="name">pos.config.form.view.inherit</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+             <xpath expr="//div[@id='posbox_reference']" position="after">
+
+                 <h2>Time in Ticket</h2>
+                    <div class="row mt16 o_settings_container" id="inventory_location">
+                        <div class="col-12 col-lg-6 o_setting_box" title="Operation types show up in the Inventory dashboard.">
+                            <div class="o_setting_left_pane">
+                                <field name="check_time_ticket"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="check_time_ticket" string="Print Time Service"/>
+                                <span class="fa fa-lg fa-clock-o" title="Print Time Service" role="img" aria-label="Print Time Service"></span>
+                                <div class="text-muted">
+                                    Enable time service printing on the POS ticket
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_pos_pos_form_extend" model="ir.ui.view">
+        <field name="name">pos.order.form.extend</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/notebook/page/field[@name='lines']/form/group/field[@name='notice']" position="after">
+                <field name="usage_time" string="Usage Time" attrs="{'invisible': [('usage_time', '=', '00:00:00')]}" />
+            </xpath>
+        </field>
+    </record>
+    </data>
+</odoo>
